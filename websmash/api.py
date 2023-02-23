@@ -32,26 +32,20 @@ def api_submit():
 def get_stats():
     redis_store = get_db()
     pending = redis_store.llen(app.config['DEFAULT_QUEUE'])
-    legacy = redis_store.llen(app.config['LEGACY_QUEUE'])
-    fast = redis_store.llen(app.config['FAST_QUEUE'])
     running = redis_store.llen('jobs:running')
 
     # carry over jobs count from the old database from the config
     total_jobs = app.config['OLD_JOB_COUNT'] + redis_store.llen('jobs:completed') + \
         redis_store.llen('jobs:failed') + redis_store.llen('jobs:removed')
 
-    if pending + running + fast + legacy > 0:
+    if pending + running > 0:
         status = 'working'
     else:
         status = 'idle'
 
     ts_queued, ts_queued_m = _get_job_timestamps(_get_oldest_job(app.config['DEFAULT_QUEUE']))
-    ts_fast, ts_fast_m = _get_job_timestamps(_get_oldest_job(app.config['FAST_QUEUE']))
-    ts_legacy, ts_legacy_m = _get_job_timestamps(_get_oldest_job(app.config['LEGACY_QUEUE']))
 
     return jsonify(status=status, queue_length=pending, running=running,
-                   fast=fast, ts_fast=ts_fast, ts_fast_m=ts_fast_m,
-                   legacy=legacy, ts_legacy=ts_legacy, ts_legacy_m=ts_legacy_m,
                    total_jobs=total_jobs,
                    ts_queued=ts_queued, ts_queued_m=ts_queued_m)
 

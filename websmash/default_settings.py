@@ -21,31 +21,11 @@ OLD_JOB_COUNT = 0
 # Job filter settings
 MAX_JOBS_PER_USER = 5
 
-# Users with access to the priority queue
-VIP_USERS = set()
-
 # Queue configuration
-DEFAULT_QUEUE = "jobs:queued"
-FAST_QUEUE = 'jobs:minimal'
-PRIORITY_QUEUE = 'jobs:priority'
+DEFAULT_QUEUE = "jobs:experimental"
 DEVELOPMENT_QUEUE = 'jobs:development'
 LEGACY_QUEUE = 'jobs:legacy'
 WAITLIST_PREFIX = 'jobs:waiting'
 DOWNLOAD_QUEUE = 'jobs:downloads'
-
-DEFAULT_JOBTYPE = 'antismash7'
-DARK_LAUNCH_JOBTYPE = 'antismash7'
-LEGACY_JOBTYPE = 'antismash6'
-
-
-# Percentage of jobs where we activate features we only want to run occasionally
-# during dark launches
-RARE_TEST_PERCENTAGE = 10
-
-# Percentage of jobs also sent into the development version queue
-DARK_LAUNCH_PERCENTAGE = 10
-# Jobs transferred to the development version queue get hardcoded to use this
-# email address so we can (a) track them (b) they don't confuse the submitter
-DARK_LAUNCH_EMAIL = "antismash@example.com"
 
 # End configuration
