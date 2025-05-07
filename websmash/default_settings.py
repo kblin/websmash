@@ -32,9 +32,9 @@ DEVELOPMENT_QUEUE = 'jobs:development'
 WAITLIST_PREFIX = 'jobs:waiting'
 DOWNLOAD_QUEUE = 'jobs:downloads'
 
-DEFAULT_JOBTYPE = 'antismash8'
-DARK_LAUNCH_JOBTYPE = 'antismash8'
-LEGACY_JOBTYPE = 'antismash7'
+DEFAULT_JOBTYPE = 'epssmash'
+DARK_LAUNCH_JOBTYPE = 'epssmash'
+LEGACY_JOBTYPE = 'epssmash'
 
 
 # Percentage of jobs where we activate features we only want to run occasionally

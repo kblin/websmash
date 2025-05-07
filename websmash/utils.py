@@ -42,19 +42,13 @@ def _submit_job(redis_store, job, config):
     """Submit a new job"""
     job.state = 'queued'
     limit = config['MAX_JOBS_PER_USER']
-    vips = config['VIP_USERS']
 
-    if job.email in vips:
-        job.target_queues.append(config['PRIORITY_QUEUE'])
-    elif job.minimal:
-        job.target_queues.append(config['FAST_QUEUE'])
-    else:
-        job.target_queues.append(config['DEFAULT_QUEUE'])
+    job.target_queues.append(config['DEFAULT_QUEUE'])
 
-        if job.email and _count_pending_jobs_with_email(redis_store, job) > limit:
-            _waitlist_job(job, job.email)
-        elif _count_pending_jobs_with_ip(redis_store, job) > limit:
-            _waitlist_job(job, job.ip_addr)
+    if job.email and _count_pending_jobs_with_email(redis_store, job) > limit:
+        _waitlist_job(job, job.email)
+    elif _count_pending_jobs_with_ip(redis_store, job) > limit:
+        _waitlist_job(job, job.ip_addr)
 
     if job.needs_download:
         job.target_queues.append(config['DOWNLOAD_QUEUE'])
@@ -186,46 +180,15 @@ def dispatch_job():
     if val:
         job.email = val
 
-    job.minimal = _get_checkbox(request, 'minimal')
-
-    job.all_orfs = _get_checkbox(request, 'all_orfs')
-
-    job.smcogs = _get_checkbox(request, 'smcogs')
-
     job.clusterblast = _get_checkbox(request, 'clusterblast')
-    job.knownclusterblast = _get_checkbox(request, 'knownclusterblast')
-    job.subclusterblast = _get_checkbox(request, 'subclusterblast')
-    job.cc_mibig = _get_checkbox(request, 'cc_mibig')
 
     job.jobtype = request.form.get('jobtype', app.config['DEFAULT_JOBTYPE'])
-    if job.jobtype not in (app.config['LEGACY_JOBTYPE'], app.config['DEFAULT_JOBTYPE'], app.config['DARK_LAUNCH_JOBTYPE']):
+    if job.jobtype not in (app.config['DEFAULT_JOBTYPE']):
         raise BadRequest(f"Invalid jobtype {job.jobtype}")
 
     genefinder = request.form.get('genefinder', '')
     if genefinder:
         job.genefinder = genefinder
-
-    hmmdetection_strictness = request.form.get('hmmdetection_strictness', '')
-    if hmmdetection_strictness:
-        job.hmmdetection_strictness = hmmdetection_strictness
-
-    val = request.form.get('from', 0, type=int)
-    if val:
-        job.from_pos = val
-
-    val = request.form.get('to', 0, type=int)
-    if val:
-        job.to_pos = val
-
-    job.asf = _get_checkbox(request, 'asf')
-    job.tta = _get_checkbox(request, 'tta')
-    job.cassis = _get_checkbox(request, 'cassis')
-    job.clusterhmmer = _get_checkbox(request, 'clusterhmmer')
-    job.pfam2go = _get_checkbox(request, 'pfam2go')
-    job.rre = _get_checkbox(request, 'rre')
-    job.tigrfam = _get_checkbox(request, 'tigrfam')
-    job.tfbs = _get_checkbox(request, "tfbs")
-    job.ncbi_context = _get_checkbox(request, 'ncbi_context')
 
     dirname = path.join(app.config['RESULTS_PATH'], job.job_id, 'input')
     os.makedirs(dirname)
@@ -273,7 +236,7 @@ def dispatch_job():
                 raise BadRequest("Could not save sideload info file!")
             job.sideloads.append(sideload_filename)
 
-    job.trace.append("{}-api".format(platform.node()))
+    job.trace.append("{}-epssmash-api".format(platform.node()))
 
     _submit_job(redis_store, job, app.config)
     _dark_launch_job(redis_store, job, app.config)
