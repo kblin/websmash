@@ -182,6 +182,10 @@ def dispatch_job():
 
     job.clusterblast = _get_checkbox(request, 'clusterblast')
 
+    job.clusterhmmer = _get_checkbox(request, 'clusterhmmer')
+    job.pfam2go = _get_checkbox(request, 'pfam2go')
+    job.tfbs = _get_checkbox(request, "tfbs")
+
     job.jobtype = request.form.get('jobtype', app.config['DEFAULT_JOBTYPE'])
     if job.jobtype not in (app.config['DEFAULT_JOBTYPE']):
         raise BadRequest(f"Invalid jobtype {job.jobtype}")
